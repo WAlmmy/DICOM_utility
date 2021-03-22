@@ -104,11 +104,13 @@ def print_patient_data(file_path,print_patient):
     patient = dcmread(file_path)
     patient_data_output_control(patient, print_patient)
     
-def show_patient_image(item_path,print_patient):
+def show_patient_image(item_path):
+    print("Showing patient image")
     patient=dcmread(item_path)
     plt.imshow(patient.pixel_array,cmap=plt.cm.bone)
+    return(patient)
     
-def modify_patient_data(file_path, name="", sex="", birth_date="",print_patient=False):
+def modify_patient_data(file_path, name="", sex="", birth_date=""):
     patient = dcmread(file_path)
     if name:
         patient.PatientName=name
@@ -116,8 +118,8 @@ def modify_patient_data(file_path, name="", sex="", birth_date="",print_patient=
         patient.PatientSex=sex
     if  birth_date:
         patient.PatientBirthDate=birth_date
-    patient_data_output_control(patient,print_patient)
     patient.save_as(file_path)
+    return patient
     
 def parse_input(input_str):
     if input_str=="Y":
@@ -150,20 +152,32 @@ def main(p_name,p_birth_date,p_sex,set_datetime,set_age,display_image,print_pati
     display_image=parse_input(display_image)
       
     print("parsed input")
+    print_flag=False
+    patient=None
+    if print_patient:
+        print_flag=True
+        print("print flage set")
     if p_name or p_sex or p_birth_date:
         print("modifying data")
         print(print_patient)
-        modify_patient_data(item_path, name=p_name, sex=p_sex,
-                            birth_date=p_birth_date,print_patient=print_patient)
+        patient=modify_patient_data(item_path, name=p_name, sex=p_sex,
+                            birth_date=p_birth_date)
+        print_flag=False
     if set_age:
         print("Setting age")
         set_patient_age_for_files_in_folder(item_path,print_patient)
+        print_flag=False
     if set_datetime:
         print("Setting datetime")
         set_current_dt_for_files_in_folder(item_path,print_patient)
+        print_flag=False
     if display_image:
-        show_patient_image(item_path,print_patient)
-    
+        patient=show_patient_image(item_path)
+        print_flage=False
+    if print_flag and not patient:
+            patient = dcmread(item_path)
+    if patient:
+        patient_data_output_control(patient,print_patient)
     
     
 if __name__=="__main__":
