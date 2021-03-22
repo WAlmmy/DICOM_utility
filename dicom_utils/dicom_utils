@@ -60,11 +60,11 @@ def set_current_dt_for_files_in_folder(folder_path,print_patient):
     
     dt, current_date, current_time=get_datetime_obj()
     for patient in file_generator(folder_path):
-        patient_data_output_control(patient,print_patient)
         #print(patient.ContentDate)
         #print(patient.ContentTime)
         patient.ContentDate=current_date
         patient.ContentTime=current_time
+        patient_data_output_control(patient,print_patient)
     #print(patient.ContentDate)
     #print(patient.ContentTime)
     
@@ -74,19 +74,19 @@ def set_current_dt_for_files_in_folder(folder_path,print_patient):
 def set_patient_age_for_files_in_folder(folder_path,print_patient):
     
     for patient in file_generator(folder_path):
-        patient_data_output_control(patient,print_patient)
         set_patient_age(patient)
+        patient_data_output_control(patient,print_patient)
     
 def set_patient_age(patient):
-    print("In patient age")
+    #print("In patient age")
     birth_date=patient.PatientBirthDate
     study_date=patient.StudyDate
-    print("bd: " + birth_date)
-    print("sd: "+study_date)
+    #print("bd: " + birth_date)
+    #print("sd: "+study_date)
     patient_age=str(get_patient_age(birth_date,study_date))
-    print("original patient age: " + patient_age)
+    #print("original patient age: " + patient_age)
     patient.Age=patient_age
-    print("new patient age: " + patient_age)
+    #print("new patient age: " + patient_age)
     
 def get_patient_age(birth_date,study_date):
     birth_date=datetime.datetime(int(birth_date[:4]), int(birth_date[4:6]), int(birth_date[6:]))
@@ -104,7 +104,7 @@ def print_patient_data(file_path,print_patient):
     patient = dcmread(file_path)
     patient_data_output_control(patient, print_patient)
     
-def modify_patient_data(file_path, name="", sex="", birth_date=""):
+def modify_patient_data(file_path, name="", sex="", birth_date="",print_patient=False):
     patient = dcmread(file_path)
     if name:
         patient.PatientName=name
@@ -112,6 +112,7 @@ def modify_patient_data(file_path, name="", sex="", birth_date=""):
         patient.PatientSex=sex
     if  birth_date:
         patient.PatientBirthDate=birth_date
+    patient_data_output_control(patient,print_patient)
     patient.save_as(file_path)
     
 
@@ -127,7 +128,7 @@ if __name__=="__main__":
     
     print_patient_data(file1,True)
     print_patient_data(file2,True)
-    modify_patient_data(file1,name="Timmy",sex="1",birth_date="20001212")
+    modify_patient_data(file1,name="Timmy",sex="1",birth_date="20001212", print_patient=False)
     
     set_current_dt_for_files_in_folder(folder_path,True)
     set_patient_age_for_files_in_folder(second_folder_path,True)
