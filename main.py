@@ -12,6 +12,7 @@ from pydicom import dcmread
 from pydicom.data import get_testdata_file
 from pydicom.fileset import FileSet
 from pydicom.uid import generate_uid
+from pydicom_PIL import show_PIL
 import matplotlib.pyplot as plt
 
 import datetime
@@ -105,9 +106,14 @@ def print_patient_data(file_path,print_patient):
     patient_data_output_control(patient, print_patient)
     
 def show_patient_image(item_path):
-    print("Showing patient image")
+    
+    #ds = read_file(item_path)
     patient=dcmread(item_path)
-    plt.imshow(patient.pixel_array,cmap=plt.cm.bone)
+    #show_PIL(ds)
+    show_PIL(patient)
+    print("Showing patient image")
+    
+    #plt.imshow(patient.pixel_array,cmap=plt.cm.bone)
     return(patient)
     
 def modify_patient_data(file_path, name="", sex="", birth_date=""):

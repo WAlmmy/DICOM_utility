@@ -8,4 +8,5 @@ python main.py "C:/Users/Jonathan/Documents/Projects/Caristo_Test/DICOM_utility/
 python main.py "C:/Users/Jonathan/Documents/Projects/Caristo_Test/DICOM_utility/raw_data/cube_dicom_files/" --set_age Y --print_patient Y
 python main.py "C:/Users/Jonathan/Documents/Projects/Caristo_Test/DICOM_utility/raw_data/cube_dicom_files/image0.dcm" --set_age Y --print_patient Y --display_image Y
 python main.py "C:\Users\Jonathan\Documents\Projects\Caristo_Test\DICOM_utility\raw_data\cube_dicom_files\image0.dcm" --print_patient Y --display_image Y
+python main.py "C:\Users\Jonathan\Documents\Projects\Caristo_Test\DICOM_utility\raw_data\cube_dicom_files\image15.dcm" --print_patient Y --display_image Y
 python main.py "C:\Users\Jonathan\Documents\Projects\Caristo_Test\DICOM_utility\raw_data\cube_dicom_files\image0.dcm" --print_patient Y 
