@@ -1,6 +1,10 @@
 python main.py --help
 python main.py "C:/Users/Jonathan/Documents/Projects/Caristo_Test/DICOM_utility/raw_data/different_birthdate_dicom_files/image10_28021985.dcm" --p_name Jimmy --p_sex 1 --p_birth_date 20001010 --print_patient Y
+python main.py "C:\Users\Jonathan\Documents\Projects\Caristo_Test\DICOM_utility\raw_data\different_birthdate_dicom_files\image10_28021985.dcm" --p_name Jimmy --p_sex 1 --p_birth_date 20001010 --print_patient Y
+python main.py "C:\Users\Jonathan\Documents\Projects\Caristo_Test\DICOM_utility\raw_data\different_birthdate_dicom_files\image10_28021985.dcm" --display_image Y --print_patient Y
 python main.py "C:/Users/Jonathan/Documents/Projects/Caristo_Test/DICOM_utility/raw_data/different_birthdate_dicom_files/" --set_datetime Y --print_patient N
 python main.py "C:/Users/Jonathan/Documents/Projects/Caristo_Test/DICOM_utility/raw_data/different_birthdate_dicom_files/" --set_datetime Y --print_patient Y
 python main.py "C:/Users/Jonathan/Documents/Projects/Caristo_Test/DICOM_utility/raw_data/cube_dicom_files/" --set_age Y --print_patient N
 python main.py "C:/Users/Jonathan/Documents/Projects/Caristo_Test/DICOM_utility/raw_data/cube_dicom_files/" --set_age Y --print_patient Y
+python main.py "C:/Users/Jonathan/Documents/Projects/Caristo_Test/DICOM_utility/raw_data/cube_dicom_files/image0.dcm" --set_age Y --print_patient Y --display_image Y
+python main.py "C:\Users\Jonathan\Documents\Projects\Caristo_Test\DICOM_utility\raw_data\cube_dicom_files\image0.dcm" --print_patient Y --display_image Y

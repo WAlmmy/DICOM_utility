@@ -12,6 +12,7 @@ from pydicom import dcmread
 from pydicom.data import get_testdata_file
 from pydicom.fileset import FileSet
 from pydicom.uid import generate_uid
+import matplotlib.pyplot as plt
 
 import datetime
 #import dateutil.relativedelta
@@ -103,6 +104,10 @@ def print_patient_data(file_path,print_patient):
     patient = dcmread(file_path)
     patient_data_output_control(patient, print_patient)
     
+def show_patient_image(item_path,print_patient):
+    patient=dcmread(item_path)
+    plt.imshow(patient.pixel_array,cmap=plt.cm.bone)
+    
 def modify_patient_data(file_path, name="", sex="", birth_date="",print_patient=False):
     patient = dcmread(file_path)
     if name:
@@ -134,13 +139,15 @@ def parse_input(input_str):
               time to current datetime')
 @click.option('--set_age', default='N', help='Set patient\'s age at time of \
               scan')
+@click.option('--display_image', default='N', help='Display image')
 @click.option('--print_patient', default='N', help='Y/N prints patient\'s data\
               after modification')
 @click.argument('item_path')             
-def main(p_name,p_birth_date,p_sex,set_datetime,set_age,print_patient,item_path):
+def main(p_name,p_birth_date,p_sex,set_datetime,set_age,display_image,print_patient,item_path):
     set_datetime=parse_input(set_datetime)
     set_age=parse_input(set_age)
     print_patient=parse_input(print_patient)
+    display_image=parse_input(display_image)
       
     print("parsed input")
     if p_name or p_sex or p_birth_date:
@@ -154,6 +161,9 @@ def main(p_name,p_birth_date,p_sex,set_datetime,set_age,print_patient,item_path)
     if set_datetime:
         print("Setting datetime")
         set_current_dt_for_files_in_folder(item_path,print_patient)
+    if display_image:
+        show_patient_image(item_path,print_patient)
+    
     
     
 if __name__=="__main__":
