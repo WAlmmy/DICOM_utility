@@ -1,22 +1,19 @@
-import pydicom
-import os 
-from pydicom.data import get_testdata_files
-dir_path = os.path.dirname(os.path.realpath(__file__))
-#w_dir=os.path.join(dir_path, "User/Desktop", "file.txt")
-#raw_data_dir=os.path.join(dir_path, "User/Desktop", "file.txt")
-
-# get some test data
-raw_data = r"""C:\Users\Jonathan\Documents\Projects\Caristo_Test\DICOM_utility\raw_data\different_birthdate_dicom_files\image10_28021985.dcm"""
-#get_testdata_files()
-ds = pydicom.dcmread(raw_data)
-patient_name=ds.PatientName
-patient_sex=ds.PatientSex
-patient_bd=ds.PatientBirthDate
-
-ds.dir("pat")
-
-patient_bd=19900525
+import click
+import .dicom_utils
 
 
-print(ds)
-print(ds.PatientName)
+@click.command()
+@click.option('--p_name', default='', help='Patient\'s name')
+@click.option('--p_birth_date', default='', help='Patient\'s birth date')
+@click.option('--p_sex', default='', help='Patient\'s sex')
+@click.option('--set_datetime', default='N', help='Y/N sets content date and \
+              time to current datetime')
+@click.option('--add_age', default='N', help='Add patient\'s age at time of \
+              scan')
+@click.argument('item_name', help='The name of the file/folder to be \
+                read/modified')             
+def main(filefolder,p_name,p_birth_date,p_sex,set_datetime,add_age,item_name):
+    #if 
+    
+if __name__=="__main__":
+    main()

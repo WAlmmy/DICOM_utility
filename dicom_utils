@@ -1,4 +1,4 @@
-import os
+import os, sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import warnings
@@ -11,7 +11,7 @@ from pydicom.uid import generate_uid
 import datetime
 #import dateutil.relativedelta
 from dateutil.relativedelta import *
-import os
+
 
 
 global folder_path
@@ -56,12 +56,13 @@ def file_generator(folder_path):
             patient.save_as(file_path)
     
     
-def set_current_dt_for_files_in_folder(folder_path):
+def set_current_dt_for_files_in_folder(folder_path,print_patient):
     
     dt, current_date, current_time=get_datetime_obj()
     for patient in file_generator(folder_path):
-        print(patient.ContentDate)
-        print(patient.ContentTime)
+        patient_data_output_control(patient,print_patient)
+        #print(patient.ContentDate)
+        #print(patient.ContentTime)
         patient.ContentDate=current_date
         patient.ContentTime=current_time
     #print(patient.ContentDate)
@@ -70,10 +71,10 @@ def set_current_dt_for_files_in_folder(folder_path):
     
     # print(os.path.join(directory, filename))
         
-def set_patient_age_for_files_in_folder(folder_path):
+def set_patient_age_for_files_in_folder(folder_path,print_patient):
     
     for patient in file_generator(folder_path):
-        print(patient.PatientAge)
+        patient_data_output_control(patient,print_patient)
         set_patient_age(patient)
     
 def set_patient_age(patient):
@@ -83,8 +84,9 @@ def set_patient_age(patient):
     print("bd: " + birth_date)
     print("sd: "+study_date)
     patient_age=str(get_patient_age(birth_date,study_date))
-    print("patient_age: " + patient_age)
-    patient.PatientAge=patient_age
+    print("original patient age: " + patient_age)
+    patient.Age=patient_age
+    print("new patient age: " + patient_age)
     
 def get_patient_age(birth_date,study_date):
     birth_date=datetime.datetime(int(birth_date[:4]), int(birth_date[4:6]), int(birth_date[6:]))
@@ -94,6 +96,39 @@ def get_patient_age(birth_date,study_date):
     return time_difference.years
     
 
+def patient_data_output_control(patient,print_patient):    
+    if print_patient:
+        print(patient)
+
+def print_patient_data(file_path,print_patient):
+    patient = dcmread(file_path)
+    patient_data_output_control(patient, print_patient)
+    
+def modify_patient_data(file_path, name="", sex="", birth_date=""):
+    patient = dcmread(file_path)
+    if name:
+        patient.PatientName=name
+    if sex:
+        patient.PatientSex=sex
+    if  birth_date:
+        patient.PatientBirthDate=birth_date
+    patient.save_as(file_path)
+    
+
+    
+
+
+
+    
+
 if __name__=="__main__":
-    set_current_dt_for_files_in_folder(folder_path)
-    set_patient_age_for_files_in_folder(second_folder_path)
+    file1= r"""C:\Users\Jonathan\Documents\Projects\Caristo_Test\DICOM_utility\raw_data\different_birthdate_dicom_files\image10_28021985.dcm"""
+    file2= r"""C:\Users\Jonathan\Documents\Projects\Caristo_Test\DICOM_utility\raw_data\different_birthdate_dicom_files\image11_29021984.dcm"""
+    
+    print_patient_data(file1,True)
+    print_patient_data(file2,True)
+    modify_patient_data(file1,name="Timmy",sex="1",birth_date="20001212")
+    
+    set_current_dt_for_files_in_folder(folder_path,True)
+    set_patient_age_for_files_in_folder(second_folder_path,True)
+    #print(os.path.dirname(sys.path[0]))
