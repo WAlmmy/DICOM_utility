@@ -258,13 +258,13 @@ def open_file_safely(file_path):
 @click.option('--p_name', default='', help='Patient\'s name')
 @click.option('--p_birth_date', default='', help='Patient\'s birth date')
 @click.option('--p_sex', default='', help='Patient\'s sex')
-@click.option('--set_datetime', default='N', help='Y/N sets content date and \
-              time to current datetime')
-@click.option('--set_age', default='N', help='Set patient\'s age at time of \
-              scan')
+@click.option('--set_datetime', default='N', 
+              help='Y/N sets content date and time to current datetime')
+@click.option('--set_age', default='N', 
+              help='Set patient\'s age at time of scan')
 @click.option('--display_image', default='N', help='Display image')
-@click.option('--print_patient', default='N', help='Y/N prints patient\'s data\
-              after modification')
+@click.option('--print_patient', default='N', 
+              help='Y/N prints patient\'s data after modification')
 @click.argument('item_path')             
 def main(p_name,p_birth_date,p_sex,set_datetime,set_age,display_image,print_patient,item_path):
     set_datetime=parse_input(set_datetime)
