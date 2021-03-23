@@ -4,16 +4,10 @@ import click
 
 
 import os, sys
-from pathlib import Path
-from tempfile import TemporaryDirectory
-import warnings
+
 
 from pydicom import dcmread
-from pydicom.data import get_testdata_file
-from pydicom.fileset import FileSet
-from pydicom.uid import generate_uid
 from pydicom_PIL import show_PIL
-import matplotlib.pyplot as plt
 
 import datetime
 #import dateutil.relativedelta
@@ -22,25 +16,61 @@ from dateutil.relativedelta import *
 
 
 def get_datetime_obj():
+    """
+    Returns
+    -------
+    dt : DateTime Object
+        Current time.
+    current_date : String
+        Current date.
+    current_time : STRING
+        Current time.
+
+    """
     # Set current date/time
     dt = datetime.datetime.now()
     
     current_date= dt.strftime('%Y%m%d')
     current_time = dt.strftime('%H%M%S')
-    print(current_date)
-    print(current_time)
     return dt, current_date, current_time
 
 
 
 def file_generator(folder_path):
     """
-
     Parameters
     ----------
-    folder_path : string
+    folder_path : string.
         this opens each file in a directory to be editted.
-        on next, file is written
+        on next, file is written.
+
+    Yields
+    -------
+    patient : FileDataset
+        pydicom object to r/w files.
+    """
+    try:
+        for file_name in os.listdir(folder_path):
+            if file_name.endswith(".dcm"): 
+                file_path=os.path.join(folder_path,file_name)
+                patient = open_file_safely(file_path)
+                yield patient
+                
+                patient.save_as(file_path)
+    except:
+        print("Could not parse folder:" + folder_path + 
+              "\nThis is often caused by entering a filename, instead of folder")
+        sys.exit()
+    
+    
+def set_current_dt_for_files_in_folder(folder_path,print_patient):
+    """
+    Parameters
+    ----------
+    folder_path : STRING
+        Folder path.
+    print_patient : BOOLEAN
+        Controls whether to print patient details
 
     Returns
     -------
@@ -48,48 +78,63 @@ def file_generator(folder_path):
 
     """
     
-    for file_name in os.listdir(folder_path):
-        if file_name.endswith(".dcm"): 
-            file_path=os.path.join(folder_path,file_name)
-            patient = dcmread(file_path)
-            yield patient
-            
-            patient.save_as(file_path)
-    
-    
-def set_current_dt_for_files_in_folder(folder_path,print_patient):
-    
     dt, current_date, current_time=get_datetime_obj()
     for patient in file_generator(folder_path):
-        #print(patient.ContentDate)
-        #print(patient.ContentTime)
         patient.ContentDate=current_date
         patient.ContentTime=current_time
         patient_data_output_control(patient,print_patient)
-    #print(patient.ContentDate)
-    #print(patient.ContentTime)
-    
-    
-    # print(os.path.join(directory, filename))
+
         
 def set_patient_age_for_files_in_folder(folder_path,print_patient):
-    
+    """
+    Parameters
+    ----------
+    folder_path : STRING
+        Folder path
+    print_patient : BOOLEAN
+        Controls whether to print patient details
+
+    Returns
+    -------
+    None.
+
+    """
     for patient in file_generator(folder_path):
         set_patient_age(patient)
         patient_data_output_control(patient,print_patient)
     
 def set_patient_age(patient):
-    #print("In patient age")
+    """
+    Parameters
+    ----------
+    patient : FileDataset
+        pydicom object to r/w files.
+
+    Returns
+    -------
+    None.
+
+    """
     birth_date=patient.PatientBirthDate
     study_date=patient.StudyDate
-    #print("bd: " + birth_date)
-    #print("sd: "+study_date)
     patient_age=str(get_patient_age(birth_date,study_date))
-    #print("original patient age: " + patient_age)
     patient.Age=patient_age
-    #print("new patient age: " + patient_age)
     
 def get_patient_age(birth_date,study_date):
+    """
+    Parameters
+    ----------
+    birth_date : STRING
+        Birth date in YYYYMMDD format
+    study_date: STRING
+        Study date in YYYYMMDD format
+
+    Returns
+    -------
+    time_difference.years : INTEGER
+        The time difference in years from the birth_date to study_date
+
+    """
     birth_date=datetime.datetime(int(birth_date[:4]), int(birth_date[4:6]), int(birth_date[6:]))
     study_date=datetime.datetime(int(study_date[:4]), int(study_date[4:6]), int(study_date[6:]))
     
@@ -97,27 +142,63 @@ def get_patient_age(birth_date,study_date):
     return time_difference.years
     
 
-def patient_data_output_control(patient,print_patient):    
+def patient_data_output_control(patient,print_patient):  
+    """
+    Parameters
+    ----------
+    patient : FileDataset
+        pydicom object to r/w files.
+    print_patient : BOOLEAN
+        Whether to print patient date.
+
+    Returns
+    -------
+    None
+
+    """
     if print_patient:
         print(patient)
 
 def print_patient_data(file_path,print_patient):
-    patient = dcmread(file_path)
+    
+    patient = open_file_safely(file_path)
     patient_data_output_control(patient, print_patient)
     
-def show_patient_image(item_path):
+def show_patient_image(file_path):
+    """
+    Parameters
+    ----------
+    file_path : STRING
+        File path to be read.
+
+    Returns
+    -------
+    patient : FileDataset
+        pydicom object to r/w files.
+    """
     
-    #ds = read_file(item_path)
-    patient=dcmread(item_path)
-    #show_PIL(ds)
+    patient=open_file_safely(file_path)
     show_PIL(patient)
-    print("Showing patient image")
-    
-    #plt.imshow(patient.pixel_array,cmap=plt.cm.bone)
     return(patient)
     
 def modify_patient_data(file_path, name="", sex="", birth_date=""):
-    patient = dcmread(file_path)
+    """
+    Parameters
+    ----------
+    file_path : STRING
+        File path to be read.
+    name : STRING
+        Patient name.
+    sex : STRING
+        Patient sex as "0" or "1"
+    birth_date : "STRING"
+        Patient birth_date as STRING in YYYYMMDD format
+    Returns
+    -------
+    patient : FileDataset
+        pydicom object to r/w files.
+    """
+    patient = open_file_safely(file_path)
     if name:
         patient.PatientName=name
     if sex:
@@ -128,6 +209,24 @@ def modify_patient_data(file_path, name="", sex="", birth_date=""):
     return patient
     
 def parse_input(input_str):
+    """
+
+    Parameters
+    ----------
+    input_str : STRING
+        'Y' or 'N'.
+
+    Raises
+    ------
+    ValueError
+        This is thrown if any string other than 'Y', or 'N' input.
+
+    Returns
+    -------
+    input_bool : BOOLEAN
+        BOOLEAN output, True for input _str =="Y" else, False
+
+    """
     if input_str=="Y":
         input_bool=True
     elif input_str=="N":
@@ -135,9 +234,25 @@ def parse_input(input_str):
     elif not input_str:
         input_bool=False
     else:
-       raise ValueError("Unidentified value set")
+        input_bool=False
+        raise ValueError("Unidentified value set. Only (Y/N) accepted.")
     return input_bool
 
+def open_file_safely(file_path):
+    """
+    This function takes a file path and opens it while handling errors with \
+        permissions. This issue is most common when a user inputs a folder as \
+            a file.
+    """
+    print("Opening file")
+    try:
+        patient = dcmread(file_path)
+    except:
+        print("Could not open/read file:", file_path)
+        sys.exit()
+    
+    return patient
+    
 
 @click.command()
 @click.option('--p_name', default='', help='Patient\'s name')
@@ -157,31 +272,27 @@ def main(p_name,p_birth_date,p_sex,set_datetime,set_age,display_image,print_pati
     print_patient=parse_input(print_patient)
     display_image=parse_input(display_image)
       
-    print("parsed input")
+    
     print_flag=False
     patient=None
     if print_patient:
         print_flag=True
-        print("print flage set")
+        
     if p_name or p_sex or p_birth_date:
-        print("modifying data")
-        print(print_patient)
         patient=modify_patient_data(item_path, name=p_name, sex=p_sex,
                             birth_date=p_birth_date)
         print_flag=False
     if set_age:
-        print("Setting age")
         set_patient_age_for_files_in_folder(item_path,print_patient)
         print_flag=False
     if set_datetime:
-        print("Setting datetime")
         set_current_dt_for_files_in_folder(item_path,print_patient)
         print_flag=False
     if display_image:
         patient=show_patient_image(item_path)
         print_flage=False
     if print_flag and not patient:
-            patient = dcmread(item_path)
+            patient = open_file_safely(item_path)
     if patient:
         patient_data_output_control(patient,print_patient)
     
